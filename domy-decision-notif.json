@@ -211,8 +211,7 @@
         "rule": {
           "interval": [
             {
-              "field": "seconds",
-              "secondsInterval": 5
+              "field": "seconds"
             }
           ]
         }
@@ -286,8 +285,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -96,
-        480
+        656,
+        880
       ],
       "id": "d1cb3b36-d3db-40b9-a8cd-07b238ab76d7",
       "name": "No Operation, do nothing"
@@ -363,6 +362,17 @@
           }
         ]
       ]
+    },
+    "posli ten dum do prdele": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -370,7 +380,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "ceb19df1-d343-4796-931e-963fc8f859ed",
+  "versionId": "ddcfa0d9-ab2f-4e45-90d0-64cb25ca1c65",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
