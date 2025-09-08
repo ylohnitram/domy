@@ -195,7 +195,7 @@
       "typeVersion": 2.2,
       "position": [
         176,
-        288
+        304
       ],
       "id": "84914c75-a6d3-452c-b603-322f6c76b080",
       "name": "posli ten dum do prdele",
@@ -285,8 +285,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        656,
-        880
+        960,
+        752
       ],
       "id": "d1cb3b36-d3db-40b9-a8cd-07b238ab76d7",
       "name": "No Operation, do nothing"
@@ -373,6 +373,17 @@
           }
         ]
       ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -380,7 +391,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "ddcfa0d9-ab2f-4e45-90d0-64cb25ca1c65",
+  "versionId": "93b572c5-29be-4f17-ae56-be4b543119d5",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
