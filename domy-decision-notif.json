@@ -12,82 +12,66 @@
           },
           "conditions": [
             {
-              "id": "b06eb7ee-5d9a-46b2-87df-6da5015fb05f",
-              "leftValue": "={{ $json.property_celkov_sk_re }}",
-              "rightValue": 60,
-              "operator": {
-                "type": "number",
-                "operation": "gte"
-              }
-            },
-            {
               "id": "6b83b1a5-fbf1-4a54-bcf4-02f3d606de5f",
-              "leftValue": "={{ $json.property_pozemek }}",
-              "rightValue": "",
+              "leftValue": "={{ !!($json.property_pozemek !== null && $json.property_pozemek?.[0] !== null) }}",
+              "rightValue": true,
               "operator": {
-                "type": "number",
-                "operation": "notEmpty",
-                "singleValue": true
+                "type": "boolean",
+                "operation": "true"
               }
             },
             {
               "id": "200dcbc7-6677-4a5b-ba41-819a8a6ade09",
-              "leftValue": "={{ $json.property_dojezd_do_st }}",
-              "rightValue": "",
+              "leftValue": "={{ !!($json.property_dojezd_do_st !== null && $json.property_dojezd_do_st?.[0] !== null) }}",
+              "rightValue": true,
               "operator": {
-                "type": "number",
-                "operation": "notEmpty",
-                "singleValue": true
+                "type": "boolean",
+                "operation": "true"
               }
             },
             {
               "id": "88dedeee-f1c7-40cd-a8d1-ebd470b9ab8a",
-              "leftValue": "={{ $json.property_kola_kolka }}",
-              "rightValue": "",
+              "leftValue": "={{ !!($json.property_kola_kolka !== null && $json.property_kola_kolka?.[0] !== null) }}",
+              "rightValue": true,
               "operator": {
-                "type": "number",
-                "operation": "notEmpty",
-                "singleValue": true
+                "type": "boolean",
+                "operation": "true"
               }
             },
             {
               "id": "696a668e-7727-4e2c-8fe2-d87bc6728a5b",
-              "leftValue": "={{ $json.property_cena }}",
-              "rightValue": "",
+              "leftValue": "={{ !!($json.property_cena !== null && $json.property_cena?.[0] !== null) }}",
+              "rightValue": true,
               "operator": {
-                "type": "number",
-                "operation": "notEmpty",
-                "singleValue": true
+                "type": "boolean",
+                "operation": "true"
               }
             },
             {
               "id": "874727a8-dfc5-4b47-a469-296561982da4",
-              "leftValue": "={{ $json.property_technick_stav }}",
-              "rightValue": "",
+              "leftValue": "={{ !!($json.property_technick_stav !== null && $json.property_technick_stav?.[0] !== null) }}",
+              "rightValue": true,
               "operator": {
-                "type": "number",
-                "operation": "notEmpty",
-                "singleValue": true
+                "type": "boolean",
+                "operation": "true"
               }
             },
             {
               "id": "34170f2e-4ea9-4494-8ee3-2b404254e2ce",
-              "leftValue": "={{ $json.property_vy_it_pro_d_ti }}",
-              "rightValue": "",
+              "leftValue": "={{ !!($json.property_vy_it_pro_d_ti !== null && $json.property_vy_it_pro_d_ti?.[0] !== null) }}",
+              "rightValue": true,
               "operator": {
-                "type": "number",
-                "operation": "notEmpty",
-                "singleValue": true
+                "type": "boolean",
+                "operation": "true"
               }
             },
             {
               "id": "b5dc5bcc-3575-460a-8be8-b0596897a563",
-              "leftValue": "={{ $json.property_dojezd_do_prahy }}",
-              "rightValue": "",
+              "leftValue": "={{ !!($json.property_dojezd_do_prahy !== null && $json.property_dojezd_do_prahy?.[0] !== null) }}",
+              "rightValue": true,
               "operator": {
-                "type": "number",
-                "operation": "notEmpty",
-                "singleValue": true
+                "type": "boolean",
+                "operation": "true"
               }
             }
           ],
@@ -98,11 +82,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -80,
-        96
+        -2016,
+        -352
       ],
-      "id": "8a329c50-e95f-4f6a-9b49-66ecfe8afa47",
-      "name": "If má skore nad 60"
+      "id": "391bbf54-ef54-437d-99b4-175fbde38cd4",
+      "name": "If jsou vyplněny hodnoty"
     },
     {
       "parameters": {
@@ -132,10 +116,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -304,
-        384
+        -2240,
+        -192
       ],
-      "id": "9192d214-f5f9-4f50-bb28-7d192aacef9f",
+      "id": "449226d9-f60d-4ee4-9083-36ae20df5ece",
       "name": "If je nově v nabídce"
     },
     {
@@ -160,10 +144,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        176,
-        80
+        -1264,
+        -384
       ],
-      "id": "20822d67-0837-40c0-b08c-48fcc0705d7c",
+      "id": "131e0c24-bc31-4b67-8631-e6e632339c61",
       "name": "uprav v DB stav na prověřuju",
       "credentials": {
         "notionApi": {
@@ -194,10 +178,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        176,
-        304
+        -1264,
+        -176
       ],
-      "id": "84914c75-a6d3-452c-b603-322f6c76b080",
+      "id": "be161f0f-d7f3-4bb3-89cc-6412664c59b0",
       "name": "posli ten dum do prdele",
       "credentials": {
         "notionApi": {
@@ -219,10 +203,10 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -704,
-        384
+        -2640,
+        -192
       ],
-      "id": "59e17c97-166d-49f4-b3c5-7a32fe92294a",
+      "id": "af06eec3-b28d-44b4-ba94-d67e36dd960a",
       "name": "Schedule Trigger"
     },
     {
@@ -242,10 +226,10 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        -496,
-        384
+        -2432,
+        -192
       ],
-      "id": "fa71850d-6af2-4176-9cec-d444f12c8988",
+      "id": "786d7394-516c-456b-9127-9626ead91fcb",
       "name": "Get many database pages",
       "credentials": {
         "notionApi": {
@@ -267,12 +251,12 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        384,
-        80
+        -1072,
+        -384
       ],
-      "id": "8c18fc38-cc6b-48c2-aaca-0a8ae5e9e0cf",
-      "name": "Send a text message",
-      "webhookId": "c03fcb12-d182-49e3-aa61-34f2a73eef89",
+      "id": "52d0fb01-8813-439e-bfd1-2ef6a1f33d98",
+      "webhookId": "fd732835-22fb-43ec-8e55-e1fdaf043ed1",
+      "name": "Telegram",
       "credentials": {
         "telegramApi": {
           "id": "8UlFrqvITS1Qe0cs",
@@ -285,38 +269,53 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        960,
-        752
+        -848,
+        256
       ],
-      "id": "d1cb3b36-d3db-40b9-a8cd-07b238ab76d7",
+      "id": "c7cd456d-a57c-4b26-85d6-9d17b82ace4e",
       "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b06eb7ee-5d9a-46b2-87df-6da5015fb05f",
+              "leftValue": "={{ $json.property_celkov_sk_re }}",
+              "rightValue": 60,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1792,
+        -368
+      ],
+      "id": "f3eff0d3-0854-4ac4-b750-387155cecdcd",
+      "name": "If má skore nad 60"
     }
   ],
   "pinData": {},
   "connections": {
-    "If má skore nad 60": {
-      "main": [
-        [
-          {
-            "node": "uprav v DB stav na prověřuju",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "posli ten dum do prdele",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If je nově v nabídce": {
       "main": [
         [
           {
-            "node": "If má skore nad 60",
+            "node": "If jsou vyplněny hodnoty",
             "type": "main",
             "index": 0
           }
@@ -324,17 +323,6 @@
         [
           {
             "node": "No Operation, do nothing",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "uprav v DB stav na prověřuju": {
-      "main": [
-        [
-          {
-            "node": "Send a text message",
             "type": "main",
             "index": 0
           }
@@ -363,6 +351,42 @@
         ]
       ]
     },
+    "If jsou vyplněny hodnoty": {
+      "main": [
+        [
+          {
+            "node": "If má skore nad 60",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If má skore nad 60": {
+      "main": [
+        [
+          {
+            "node": "uprav v DB stav na prověřuju",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "posli ten dum do prdele",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "posli ten dum do prdele": {
       "main": [
         [
@@ -374,7 +398,18 @@
         ]
       ]
     },
-    "Send a text message": {
+    "uprav v DB stav na prověřuju": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
       "main": [
         [
           {
@@ -386,12 +421,12 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "93b572c5-29be-4f17-ae56-be4b543119d5",
+  "versionId": "393a66e3-c3d9-4bf7-8b7b-890810c3ef1e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
