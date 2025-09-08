@@ -1,0 +1,380 @@
+{
+  "name": "domy-decision-notif",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b06eb7ee-5d9a-46b2-87df-6da5015fb05f",
+              "leftValue": "={{ $json.property_celkov_sk_re }}",
+              "rightValue": 60,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "6b83b1a5-fbf1-4a54-bcf4-02f3d606de5f",
+              "leftValue": "={{ $json.property_pozemek }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "200dcbc7-6677-4a5b-ba41-819a8a6ade09",
+              "leftValue": "={{ $json.property_dojezd_do_st }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "88dedeee-f1c7-40cd-a8d1-ebd470b9ab8a",
+              "leftValue": "={{ $json.property_kola_kolka }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "696a668e-7727-4e2c-8fe2-d87bc6728a5b",
+              "leftValue": "={{ $json.property_cena }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "874727a8-dfc5-4b47-a469-296561982da4",
+              "leftValue": "={{ $json.property_technick_stav }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "34170f2e-4ea9-4494-8ee3-2b404254e2ce",
+              "leftValue": "={{ $json.property_vy_it_pro_d_ti }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "b5dc5bcc-3575-460a-8be8-b0596897a563",
+              "leftValue": "={{ $json.property_dojezd_do_prahy }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        96
+      ],
+      "id": "8a329c50-e95f-4f6a-9b49-66ecfe8afa47",
+      "name": "If má skore nad 60"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3135f8cd-c5bb-43ca-b604-e41886fda51f",
+              "leftValue": "={{ $json.property_status }}",
+              "rightValue": "Je v nabídce",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -304,
+        384
+      ],
+      "id": "9192d214-f5f9-4f50-bb28-7d192aacef9f",
+      "name": "If je nově v nabídce"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Status|status",
+              "statusValue": "Prověřuju"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        80
+      ],
+      "id": "20822d67-0837-40c0-b08c-48fcc0705d7c",
+      "name": "uprav v DB stav na prověřuju",
+      "credentials": {
+        "notionApi": {
+          "id": "i4KxpUuErwtEY3Mh",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Status|status",
+              "statusValue": "=Sereme na něj"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        288
+      ],
+      "id": "84914c75-a6d3-452c-b603-322f6c76b080",
+      "name": "posli ten dum do prdele",
+      "credentials": {
+        "notionApi": {
+          "id": "i4KxpUuErwtEY3Mh",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -704,
+        384
+      ],
+      "id": "59e17c97-166d-49f4-b3c5-7a32fe92294a",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "262ba2a4-bf4b-8050-a729-d7fa73dddc93",
+          "mode": "list",
+          "cachedResultName": "Domy",
+          "cachedResultUrl": "https://www.notion.so/262ba2a4bf4b8050a729d7fa73dddc93"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -496,
+        384
+      ],
+      "id": "fa71850d-6af2-4176-9cec-d444f12c8988",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "i4KxpUuErwtEY3Mh",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "-1002940333147",
+        "text": "={{ $json.property_url }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_notification": false,
+          "disable_web_page_preview": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        80
+      ],
+      "id": "8c18fc38-cc6b-48c2-aaca-0a8ae5e9e0cf",
+      "name": "Send a text message",
+      "webhookId": "c03fcb12-d182-49e3-aa61-34f2a73eef89",
+      "credentials": {
+        "telegramApi": {
+          "id": "8UlFrqvITS1Qe0cs",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        480
+      ],
+      "id": "d1cb3b36-d3db-40b9-a8cd-07b238ab76d7",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If má skore nad 60": {
+      "main": [
+        [
+          {
+            "node": "uprav v DB stav na prověřuju",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "posli ten dum do prdele",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If je nově v nabídce": {
+      "main": [
+        [
+          {
+            "node": "If má skore nad 60",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "uprav v DB stav na prověřuju": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "If je nově v nabídce",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "ceb19df1-d343-4796-931e-963fc8f859ed",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
+  },
+  "id": "PWf9Rv0Vf8yZJxy6",
+  "tags": []
+}
