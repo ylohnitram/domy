@@ -1,0 +1,228 @@
+{
+  "name": "n8n-isalive",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -480,
+        176
+      ],
+      "id": "18dcd57c-e4d1-4055-bebb-c89962b1c3c0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://api.ipify.org?format=json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -272,
+        176
+      ],
+      "id": "bd8b7f60-ca1a-4650-b199-8de905ab5c65",
+      "name": "What Is My Public IP Address"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "19723adc-317e-4bc3-a3f8-129eb8d6a83c",
+              "name": "InstanceName",
+              "value": "Amnesiac-srv",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        176
+      ],
+      "id": "cd94c608-4ead-4098-9925-2721cb597500",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "269ba2a4-bf4b-8086-bc9a-d30ad49e4aa4",
+          "mode": "list",
+          "cachedResultName": "N8N Instances",
+          "cachedResultUrl": "https://www.notion.so/269ba2a4bf4b8086bc9ad30ad49e4aa4"
+        },
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "Instance Name|title",
+              "condition": "equals",
+              "titleValue": "={{ $json.InstanceName }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        176
+      ],
+      "id": "0f30d9ee-e29a-4209-ad3c-e7801b0ccb68",
+      "name": "Get many database pages",
+      "credentials": {
+        "notionApi": {
+          "id": "i4KxpUuErwtEY3Mh",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "update",
+        "pageId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "IP Address|rich_text",
+              "textContent": "={{ $json.ip }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        576,
+        432
+      ],
+      "id": "4bbec2e5-038c-455f-9c4c-8d9b43ff71b8",
+      "name": "Update a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "i4KxpUuErwtEY3Mh",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        384,
+        432
+      ],
+      "id": "b5f3ef62-2711-4ac7-812b-d7e424c77194",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "What Is My Public IP Address",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "What Is My Public IP Address": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get many database pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many database pages": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a database page": {
+      "main": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "75fced9e-fb20-4504-aa5d-8d2525c14ff8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
+  },
+  "id": "d5z9G64G4IzBuQc5",
+  "tags": []
+}
