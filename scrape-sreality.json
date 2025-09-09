@@ -5,7 +5,9 @@
       "parameters": {
         "rule": {
           "interval": [
-            {}
+            {
+              "triggerAtHour": 15
+            }
           ]
         }
       },
@@ -669,7 +671,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "6ad1a4d2-8a43-441f-8b7d-e4d984b8271d",
+  "versionId": "e880d867-b48c-46df-8b45-f864591cdc13",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
