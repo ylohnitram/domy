@@ -1,0 +1,363 @@
+{
+  "name": "Sreality Scraper - Kompletní opravený",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [140, 300],
+      "id": "schedule-node"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "searchUrl",
+              "value": "https://www.sreality.cz/hledani/prodej/domy/pamatky-jine,rodinne-domy,vily,chalupy,zemedelske-usedlosti/stredocesky-kraj?per_page=100&stav=po-rekonstrukci,novostavby,dobry-stav,velmi-dobry-stav&plocha-od=90&plocha-do=10000000000&cena-od=0&cena-do=5000000&plocha-pozemku-od=500&plocha-pozemku-do=2000&bez-aukce=1"
+            }
+          ]
+        }
+      },
+      "name": "Set Search URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [360, 300],
+      "id": "set-url-node"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/scrape",
+        "sendBody": true,
+        "specifyHeaders": true,
+        "headers": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "body": "={{ JSON.stringify({\"url\": $json.searchUrl, \"elements\": [{\"selector\": \"div.property a[href*='/detail/']\"}]}) }}"
+      },
+      "name": "Scrape Property List",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [580, 300],
+      "id": "scrape-list-node"
+    },
+    {
+      "parameters": {
+        "html": "={{ JSON.parse($json.body).data[0].results }}",
+        "extractionValues": [
+          {
+            "key": "href",
+            "cssSelector": "a[href*='/detail/']",
+            "returnValue": "attribute",
+            "attribute": "href"
+          }
+        ]
+      },
+      "name": "Extract Property URLs",
+      "type": "n8n-nodes-base.htmlExtract",
+      "typeVersion": 3,
+      "position": [800, 300],
+      "id": "extract-urls-node"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/content",
+        "sendBody": true,
+        "specifyHeaders": true,
+        "headers": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "body": "={{ JSON.stringify({\"url\": \"https://www.sreality.cz\" + $json.href}) }}"
+      },
+      "name": "Scrape Property Detail",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1020, 300],
+      "id": "scrape-detail-node"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.body }}",
+        "extractionValues": [
+          {
+            "key": "isReserved",
+            "cssSelector": ".status.warn-1, p.status.warn-1",
+            "returnValue": "text"
+          },
+          {
+            "key": "propertyTitle",
+            "cssSelector": "span.name, h1.property-title",
+            "returnValue": "text"
+          },
+          {
+            "key": "price",
+            "cssSelector": ".norm-price, .price, .property-price",
+            "returnValue": "text"
+          },
+          {
+            "key": "location",
+            "cssSelector": ".location-text, .property-location",
+            "returnValue": "text"
+          }
+        ]
+      },
+      "name": "Extract Property Details",
+      "type": "n8n-nodes-base.htmlExtract",
+      "typeVersion": 3,
+      "position": [1240, 300],
+      "id": "extract-details-node"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.isReserved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "isEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "name": "Filter Reserved",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1460, 300],
+      "id": "filter-reserved-node"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": "YOUR_NOTION_DATABASE_ID",
+        "filterType": "simple",
+        "filter": {
+          "property": "URL",
+          "condition": "url.equals",
+          "value": "=https://www.sreality.cz{{ $('Extract Property URLs').item.json.href }}"
+        }
+      },
+      "name": "Search Notion DB",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [1680, 180],
+      "id": "search-notion-node"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $items().length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "name": "Check If New",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1900, 180],
+      "id": "check-new-node"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "create",
+        "databaseId": "YOUR_NOTION_DATABASE_ID",
+        "title": "={{ $('Extract Property Details').item.json.propertyTitle }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "URL",
+              "type": "url",
+              "urlValue": "=https://www.sreality.cz{{ $('Extract Property URLs').item.json.href }}"
+            },
+            {
+              "key": "Price",
+              "type": "rich_text",
+              "richTextValue": "={{ $('Extract Property Details').item.json.price }}"
+            },
+            {
+              "key": "Location",
+              "type": "rich_text",
+              "richTextValue": "={{ $('Extract Property Details').item.json.location }}"
+            }
+          ]
+        }
+      },
+      "name": "Create Notion Page",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [2120, 80],
+      "id": "create-notion-node"
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHANNEL_ID",
+        "text": "=🏠 Nový inzerát!\n\n{{ $('Extract Property Details').item.json.propertyTitle }}\n💰 {{ $('Extract Property Details').item.json.price }}\n📍 {{ $('Extract Property Details').item.json.location }}\n\n🔗 https://www.sreality.cz{{ $('Extract Property URLs').item.json.href }}"
+      },
+      "name": "Send Telegram Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [2340, 80],
+      "id": "telegram-node"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Search URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Search URL": {
+      "main": [
+        [
+          {
+            "node": "Scrape Property List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Property List": {
+      "main": [
+        [
+          {
+            "node": "Extract Property URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Property URLs": {
+      "main": [
+        [
+          {
+            "node": "Scrape Property Detail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Property Detail": {
+      "main": [
+        [
+          {
+            "node": "Extract Property Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Property Details": {
+      "main": [
+        [
+          {
+            "node": "Filter Reserved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Reserved": {
+      "main": [
+        [
+          {
+            "node": "Search Notion DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Notion DB": {
+      "main": [
+        [
+          {
+            "node": "Check If New",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If New": {
+      "main": [
+        [
+          {
+            "node": "Create Notion Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Notion Page": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}

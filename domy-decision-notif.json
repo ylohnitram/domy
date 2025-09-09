@@ -139,7 +139,10 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "iconType": "emoji",
+          "icon": "🏡"
+        }
       },
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
@@ -173,7 +176,10 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "iconType": "emoji",
+          "icon": "=🏚️"
+        }
       },
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
@@ -421,12 +427,12 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "393a66e3-c3d9-4bf7-8b7b-890810c3ef1e",
+  "versionId": "0af16875-7edf-4ce0-83d2-39b6113a2a6a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
