@@ -1,13 +1,12 @@
 {
-  "name": "Sreality Scraper - Kompletní opravený",
+  "name": "domy-scrape-sreality",
   "nodes": [
     {
       "parameters": {
         "rule": {
           "interval": [
             {
-              "field": "hours",
-              "hoursInterval": 4
+              "triggerAtHour": 15
             }
           ]
         }
@@ -15,119 +14,236 @@
       "name": "Schedule Trigger",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [140, 300],
-      "id": "schedule-node"
+      "position": [
+        -6704,
+        -1312
+      ],
+      "id": "e6cee718-6487-4fc6-9903-96ff728d0155"
     },
     {
       "parameters": {
-        "values": {
-          "string": [
+        "assignments": {
+          "assignments": [
             {
+              "id": "810ed8db-19dd-4003-9d31-2fb0c4fa1ad0",
               "name": "searchUrl",
-              "value": "https://www.sreality.cz/hledani/prodej/domy/pamatky-jine,rodinne-domy,vily,chalupy,zemedelske-usedlosti/stredocesky-kraj?per_page=100&stav=po-rekonstrukci,novostavby,dobry-stav,velmi-dobry-stav&plocha-od=90&plocha-do=10000000000&cena-od=0&cena-do=5000000&plocha-pozemku-od=500&plocha-pozemku-do=2000&bez-aukce=1"
+              "value": "https://www.sreality.cz/hledani/prodej/domy/chalupy,pamatky-jine,rodinne-domy,vily,zemedelske-usedlosti/litomerice,stredocesky-kraj?stav=dobry-stav%2Cnovostavby%2Cpo-rekonstrukci%2Cvelmi-dobry-stav&stari=dnes&cena-od=3500000&cena-do=6500000&plocha-od=110&plocha-do=350&plocha-pozemku-od=300",
+              "type": "string"
             }
           ]
-        }
+        },
+        "options": {}
       },
       "name": "Set Search URL",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [360, 300],
-      "id": "set-url-node"
+      "position": [
+        -6480,
+        -1312
+      ],
+      "id": "8996819a-82cc-4fc0-a930-2e881fc98841"
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "http://localhost:3000/scrape",
-        "sendBody": true,
-        "specifyHeaders": true,
-        "headers": {
+        "url": "={{ $json.searchUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
           "parameters": [
             {
-              "name": "Content-Type",
-              "value": "application/json"
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "cs,en;q=0.9"
             }
           ]
         },
-        "body": "={{ JSON.stringify({\"url\": $json.searchUrl, \"elements\": [{\"selector\": \"div.property a[href*='/detail/']\"}]}) }}"
+        "options": {}
       },
-      "name": "Scrape Property List",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [580, 300],
-      "id": "scrape-list-node"
+      "typeVersion": 4.2,
+      "position": [
+        -6272,
+        -1312
+      ],
+      "id": "49cea20c-7f77-4cde-80d0-2bd9cda202e9",
+      "name": "Ziskej seznam inzeratu",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "html": "={{ JSON.parse($json.body).data[0].results }}",
-        "extractionValues": [
-          {
-            "key": "href",
-            "cssSelector": "a[href*='/detail/']",
-            "returnValue": "attribute",
-            "attribute": "href"
-          }
-        ]
-      },
-      "name": "Extract Property URLs",
-      "type": "n8n-nodes-base.htmlExtract",
-      "typeVersion": 3,
-      "position": [800, 300],
-      "id": "extract-urls-node"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://localhost:3000/content",
-        "sendBody": true,
-        "specifyHeaders": true,
-        "headers": {
-          "parameters": [
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
             {
-              "name": "Content-Type",
-              "value": "application/json"
+              "key": "url",
+              "cssSelector": "a[href*=\"/detail/\"]",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
             }
           ]
         },
-        "body": "={{ JSON.stringify({\"url\": \"https://www.sreality.cz\" + $json.href}) }}"
+        "options": {}
       },
-      "name": "Scrape Property Detail",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [1020, 300],
-      "id": "scrape-detail-node"
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -5856,
+        -1328
+      ],
+      "id": "1ee64f5b-806e-410f-9bf2-baec3d2447ba",
+      "name": "Ziskej odkazy na inzeraty"
     },
     {
       "parameters": {
-        "html": "={{ $json.body }}",
-        "extractionValues": [
-          {
-            "key": "isReserved",
-            "cssSelector": ".status.warn-1, p.status.warn-1",
-            "returnValue": "text"
-          },
-          {
-            "key": "propertyTitle",
-            "cssSelector": "span.name, h1.property-title",
-            "returnValue": "text"
-          },
-          {
-            "key": "price",
-            "cssSelector": ".norm-price, .price, .property-price",
-            "returnValue": "text"
-          },
-          {
-            "key": "location",
-            "cssSelector": ".location-text, .property-location",
-            "returnValue": "text"
-          }
-        ]
+        "url": "={{ \"https://www.sreality.cz\" + $json.url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html,application/xhtml+xml"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "cs,en;q=0.9"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
       },
-      "name": "Extract Property Details",
-      "type": "n8n-nodes-base.htmlExtract",
-      "typeVersion": 3,
-      "position": [1240, 300],
-      "id": "extract-details-node"
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -5280,
+        -1328
+      ],
+      "id": "50a3dacb-7ad0-44c4-8057-dc55aab58ba5",
+      "name": "Ziskej detaily inzeratu"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "url",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -5680,
+        -1328
+      ],
+      "id": "ddc0c2de-1b3f-46bc-8a0e-75f7d820169d",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "price",
+              "cssSelector": "=.css-1b1ajfd",
+              "skipSelectors": "img, script, style"
+            },
+            {
+              "key": "description",
+              "cssSelector": ".css-16eb98b",
+              "skipSelectors": "img, script, style"
+            },
+            {
+              "key": "energy_class",
+              "cssSelector": ".css-1h3n6d3",
+              "skipSelectors": "img, script, style"
+            },
+            {
+              "key": "location",
+              "cssSelector": ".css-74daet .MuiBreadcrumbs-li:last-child a",
+              "skipSelectors": "img, script, style"
+            },
+            {
+              "key": "tabulka",
+              "cssSelector": "dl.css-5hfkmb > div.css-1xhj18k",
+              "skipSelectors": "img, script, style",
+              "returnArray": true
+            },
+            {
+              "key": "breadcrumb",
+              "cssSelector": ".css-74daet .MuiBreadcrumbs-li a",
+              "skipSelectors": "img, script, style",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {
+          "trimValues": true
+        }
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -5072,
+        -1328
+      ],
+      "id": "d950c3fd-b834-4855-be9e-e94b8275f81e",
+      "name": "Ziskej detail inzeratu"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -4000,
+        208
+      ],
+      "id": "5779c905-3d60-45dd-85b7-45dc9455ffcf",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "model": "sonar-pro",
+        "messages": {
+          "message": [
+            {
+              "content": "Jsi expert na hodnocení nemovitostí v ČR. Tvým úkolem je aanalyzovat text inzerátu, který ti poskytnu, a ohodnotit ho podle následujících kritérií a vah.\n\n**Kritéria hodnocení (škála 0–5, kde 5 je nejlepší):**\n\n1. **Dojezd do Prahy (Váha: 4)**\n    - **5:** do 40 min; **4:** do 50 min; **3:** do 60 min; **2:** do 75 min; **1:** do 90 min; **0:** nad 90 min\n2. **Dojezd do Ústí nad Labem (Váha: 2)**\n    - **5:** do 60 min; **4:** do 75 min; **3:** do 90 min; **2:** do 105 min; **1:** do 120 min; **0:** nad 120 min\n3. **Škola & školka (Váha: 4)**\n    - **5:** Škola i školka v docházkové vzdálenosti.\n    - **3:** Jen školka v obci, ZŠ dojíždění do 10 min.\n    - **0:** Vše je daleko.\n4. **Nutné investice (Váha: 3)**\n    - **5:** Žádné.\n    - **3:** Nutnost dokončit část domu.\n    - **1:** Dvě velké investice (střecha A fasáda).\n    - **0:** Kompletní rekonstrukce.\n5. **Technický stav (Váha: 3)**\n    - **5:** Moderní a úsporné (zatepleno, TČ/FVE).\n    - **3:** Průměrný (alespoň 1 klíčový prvek moderní).\n    - **0:** Špatný stav.\n6. **Pozemek (Váha: 2)**\n    - **5:** >1000 m², rovina.\n    - **3:** 600–800 m².\n    - **1:** <400 m² nebo svažitý.\n7. **Cena (Váha: 2)**\n    - **5:** Skvělá koupě.\n    - **3:** Průměrná cena.\n    - **0:** Předražené.\n8. **Vyžití pro děti (Váha: 1)**\n    - **5:** Plná vybavenost.\n    - **3:** Jen základ (hřiště).\n    - **0:** Nevhodné okolí.\n\n**Tvůj úkol:**\n\nNa základě níže uvedeného textu inzerátu:\n\n1. Upozorni mě, pokud je v textu psáno, že je nemovitost již rezervována. V takovém případě ani nepokračuj s dalsími kroky.\n2. Upozorni mě, pokud by bylo z textu zřejmé, že velikost obytného prostoru anebo dispozice nejsou zcela vyhovující pro čtyřčlennou rodinu.\n3. Proveď hodnocení pro každé z 8 kritérií.\n",
+              "role": "system"
+            },
+            {
+              "content": "=**Ohodnoť tento dům:**\nCena: {{ $json.price }}\nLokalita: {{ $json.location }}\nDetail: {{ $json.description }}\nEnergetická náročnost (u \"G\" se může jednat o zákonnou povist uvádět hodnocení bez hotového štítku): {{ $json.energy_class }}\nDůležité informace: {{ $json.tabulka }}\n\n**DŮLEŽITÉ: Výstup vrať pouze ve formátu JSON bez dalšího textu:**\n{\n  \"unique_id\": {{ $json.unique_id }},\n  \"lokalita\": {{ $json.location }},\n  \"rezervovano\": true/false,\n  \"nevhodne_pro_rodinu\": true/false,\n  \"duvod_nevhodnosti\": \"text nebo null\",\n  \"hodnoceni\": {\n    \"dojezd_praha\": 0-5,\n    \"dojezd_usti\": 0-5,\n    \"skola_skolka\": 0-5,\n    \"nutne_investice\": 0-5,\n    \"technicky_stav\": 0-5,\n    \"pozemek\": 0-5,\n    \"cena\": 0-5,\n    \"vyziti_deti\": 0-5\n  }\n}"
+            }
+          ]
+        },
+        "simplify": true,
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        -6224,
+        -832
+      ],
+      "id": "21ea3077-4318-40af-b9ed-71fbcffa4730",
+      "name": "Ziskej hodnoceni z Perplexity",
+      "credentials": {
+        "perplexityApi": {
+          "id": "pbya3lMDvMkLKebo",
+          "name": "Perplexity account"
+        }
+      }
     },
     {
       "parameters": {
@@ -140,40 +256,51 @@
           },
           "conditions": [
             {
-              "leftValue": "={{ $json.isReserved }}",
+              "id": "7b28376c-89e7-4e1c-bb30-2ca5b6793cd0",
+              "leftValue": "={{ $json.url }}",
               "rightValue": "",
               "operator": {
                 "type": "string",
-                "operation": "isEmpty"
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "5541fd85-3501-45b4-b269-c612da3c7b93",
+              "leftValue": "={{ $json.unique_id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
               }
             }
           ],
           "combinator": "and"
-        }
+        },
+        "options": {}
       },
-      "name": "Filter Reserved",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [1460, 300],
-      "id": "filter-reserved-node"
+      "position": [
+        -6448,
+        -816
+      ],
+      "id": "e5fd5a20-c3d0-4db8-ac63-1c32544140cd",
+      "name": "If máme inzeráty ke zpracování"
     },
     {
       "parameters": {
-        "resource": "databasePage",
-        "operation": "getAll",
-        "databaseId": "YOUR_NOTION_DATABASE_ID",
-        "filterType": "simple",
-        "filter": {
-          "property": "URL",
-          "condition": "url.equals",
-          "value": "=https://www.sreality.cz{{ $('Extract Property URLs').item.json.href }}"
-        }
+        "jsCode": "// FINÁLNÍ CODE NODE S LOCATION\nconst items = [];\n\nfor (const inputItem of $input.all()) {\n  try {\n    let messageContent = inputItem.json.message;\n    \n    if (typeof messageContent === 'string') {\n      console.log('Processing item ' + inputItem.json.id);\n      \n      // Odstraň markdown\n      const jsonMarker = 'json';\n      const tripleChar = String.fromCharCode(96);\n      const markdownStart = tripleChar + tripleChar + tripleChar + jsonMarker;\n      const markdownEnd = tripleChar + tripleChar + tripleChar;\n      \n      if (messageContent.startsWith(markdownStart)) {\n        messageContent = messageContent.substring(markdownStart.length);\n      }\n      \n      const lastMark = messageContent.lastIndexOf(markdownEnd);\n      if (lastMark !== -1) {\n        messageContent = messageContent.substring(0, lastMark);\n      }\n      \n      // Escape sekvence\n      messageContent = messageContent\n        .replace(/\\\\n/g, '\\n')\n        .replace(/\\\\\"/g, '\"')\n        .trim();\n      \n      console.log('CLEANED MESSAGE:', messageContent.substring(0, 200));\n      \n      const evaluation = JSON.parse(messageContent);\n      \n      // Kompletní output s location\n      items.push({\n        json: {\n          // Identifikace\n          unique_id: evaluation.unique_id,\n          location: evaluation.lokalita,\n          \n          // AI hodnocení\n          dojezd_praha: evaluation.hodnoceni?.dojezd_praha ?? 0,\n          dojezd_usti: evaluation.hodnoceni?.dojezd_usti ?? 0,\n          skola_skolka: evaluation.hodnoceni?.skola_skolka ?? 0,\n          nutne_investice: evaluation.hodnoceni?.nutne_investice ?? 0,\n          technicky_stav: evaluation.hodnoceni?.technicky_stav ?? 0,\n          pozemek: evaluation.hodnoceni?.pozemek ?? 0,\n          cena: evaluation.hodnoceni?.cena ?? 0,\n          vyziti_deti: evaluation.hodnoceni?.vyziti_deti ?? 0,\n          \n          // Stav nemovitosti\n          rezervovano: evaluation.rezervovano ?? false,\n          nevhodne_pro_rodinu: evaluation.nevhodne_pro_rodinu ?? false,\n          duvod_nevhodnosti: evaluation.duvod_nevhodnosti ?? null\n        }\n      });\n    }\n  } catch (error) {\n    console.error('FAILED FOR ID: ' + inputItem.json.id);\n    console.error('ERROR: ' + error.message);\n    console.error('RAW MESSAGE:', inputItem.json.message);\n    \n    items.push({\n      json: {\n        unique_id: 'error_' + inputItem.json.id,\n        location: 'Neznámá lokalita',\n        error: true,\n        error_message: error.message,\n        dojezd_praha: 0,\n        dojezd_usti: 0,\n        skola_skolka: 0,\n        nutne_investice: 0,\n        technicky_stav: 0,\n        pozemek: 0,\n        cena: 0,\n        vyziti_deti: 0,\n        rezervovano: false,\n        nevhodne_pro_rodinu: false,\n        duvod_nevhodnosti: null\n      }\n    });\n  }\n}\n\nconsole.log('Successfully processed ' + items.length + ' items');\nreturn items;"
       },
-      "name": "Search Notion DB",
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2,
-      "position": [1680, 180],
-      "id": "search-notion-node"
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5984,
+        -832
+      ],
+      "id": "55e55393-339a-4dc9-afdc-6dafb6c8c077",
+      "name": "Převeď AI odpověď na objekty"
     },
     {
       "parameters": {
@@ -186,67 +313,226 @@
           },
           "conditions": [
             {
-              "leftValue": "={{ $items().length }}",
-              "rightValue": 0,
+              "id": "1cd17684-49df-49c7-aac2-1d25394ce6ba",
+              "leftValue": "={{ $json.rezervovano }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "f5e925d6-8854-4fe0-9d9b-3b205f0d3167",
+              "leftValue": "={{ $json.nevhodne_pro_rodinu }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -5440,
+        -816
+      ],
+      "id": "25e3f7ad-bc28-4f9d-93c9-4bb257a903ec",
+      "name": "If není rezervace a je vhodné"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "unique_id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -5696,
+        -816
+      ],
+      "id": "bdafde13-c817-4afb-8b5e-954aec2499cb",
+      "name": "Propoj hodnoceni a url"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ff4bb5e-cc67-4ddd-bd5f-5df4708ebdd2",
+              "name": "=unique_id",
+              "value": "={{ $json.url[0].split('/').pop() }}{{ Math.floor(Math.random() * 10000) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5488,
+        -1328
+      ],
+      "id": "9a216a51-dff0-444c-9c0a-c47c33f83b86",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -4912,
+        -1088
+      ],
+      "id": "9c8def9d-91a0-407d-845c-3bc437d959f9",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "262ba2a4-bf4b-8050-a729-d7fa73dddc93",
+          "mode": "list",
+          "cachedResultName": "Domy",
+          "cachedResultUrl": "https://www.notion.so/262ba2a4bf4b8050a729d7fa73dddc93"
+        },
+        "title": "Domy",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Dům|title",
+              "title": "={{ $json.location }}"
+            },
+            {
+              "key": "Dojezd do Prahy|number",
+              "numberValue": "={{ $json.dojezd_praha }}"
+            },
+            {
+              "key": "Dojezd do Ústí|number",
+              "numberValue": "={{ $json.dojezd_usti }}"
+            },
+            {
+              "key": "Škola & školka|number",
+              "numberValue": "={{ $json.skola_skolka }}"
+            },
+            {
+              "key": "Nutné investice|number",
+              "numberValue": "={{ $json.nutne_investice }}"
+            },
+            {
+              "key": "Technický stav|number",
+              "numberValue": "={{ $json.technicky_stav }}"
+            },
+            {
+              "key": "Pozemek|number",
+              "numberValue": "={{ $json.pozemek }}"
+            },
+            {
+              "key": "Cena|number",
+              "numberValue": "={{ $json.cena }}"
+            },
+            {
+              "key": "Vyžití pro děti|number",
+              "numberValue": "={{ $json.vyziti_deti }}"
+            },
+            {
+              "key": "URL|url",
+              "urlValue": "={{ \"https://sreality.cz\" + $json.url }}"
+            }
+          ]
+        },
+        "options": {
+          "iconType": "emoji",
+          "icon": "🛖"
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -5168,
+        -832
+      ],
+      "id": "95ce1949-e4e7-4b01-937f-b269a6e2b0ee",
+      "name": "Zapis domy do databaze",
+      "credentials": {
+        "notionApi": {
+          "id": "i4KxpUuErwtEY3Mh",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "521f8665-9752-41f8-a3fe-047d397d2a64",
+              "leftValue": "={{ $json.error.status }}",
+              "rightValue": 200,
               "operator": {
                 "type": "number",
                 "operation": "equals"
               }
+            },
+            {
+              "id": "2619ef64-75d3-4f6a-b728-f27c68c86f29",
+              "leftValue": "={{ $json.error.status }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "notExists",
+                "singleValue": true
+              }
             }
           ],
-          "combinator": "and"
-        }
+          "combinator": "or"
+        },
+        "options": {}
       },
-      "name": "Check If New",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [1900, 180],
-      "id": "check-new-node"
+      "position": [
+        -6080,
+        -1312
+      ],
+      "id": "f6568c05-d5a4-4921-8199-81d8fcaf4f12",
+      "name": "If"
     },
     {
       "parameters": {
-        "resource": "databasePage",
-        "operation": "create",
-        "databaseId": "YOUR_NOTION_DATABASE_ID",
-        "title": "={{ $('Extract Property Details').item.json.propertyTitle }}",
-        "propertiesUi": {
-          "propertyValues": [
-            {
-              "key": "URL",
-              "type": "url",
-              "urlValue": "=https://www.sreality.cz{{ $('Extract Property URLs').item.json.href }}"
-            },
-            {
-              "key": "Price",
-              "type": "rich_text",
-              "richTextValue": "={{ $('Extract Property Details').item.json.price }}"
-            },
-            {
-              "key": "Location",
-              "type": "rich_text",
-              "richTextValue": "={{ $('Extract Property Details').item.json.location }}"
-            }
-          ]
-        }
+        "errorMessage": "Neni zadny inzerat!"
       },
-      "name": "Create Notion Page",
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2,
-      "position": [2120, 80],
-      "id": "create-notion-node"
-    },
-    {
-      "parameters": {
-        "chatId": "YOUR_TELEGRAM_CHANNEL_ID",
-        "text": "=🏠 Nový inzerát!\n\n{{ $('Extract Property Details').item.json.propertyTitle }}\n💰 {{ $('Extract Property Details').item.json.price }}\n📍 {{ $('Extract Property Details').item.json.location }}\n\n🔗 https://www.sreality.cz{{ $('Extract Property URLs').item.json.href }}"
-      },
-      "name": "Send Telegram Alert",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [2340, 80],
-      "id": "telegram-node"
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        -6064,
+        -1088
+      ],
+      "id": "d7b39e68-1d1d-4e44-8a70-be00b3dbe1f5",
+      "name": "Neni zadny inzerat!"
     }
   ],
+  "pinData": {},
   "connections": {
     "Schedule Trigger": {
       "main": [
@@ -263,95 +549,193 @@
       "main": [
         [
           {
-            "node": "Scrape Property List",
+            "node": "Ziskej seznam inzeratu",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Scrape Property List": {
+    "Ziskej seznam inzeratu": {
       "main": [
         [
           {
-            "node": "Extract Property URLs",
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Ziskej odkazy na inzeraty": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Extract Property URLs": {
+    "Split Out": {
       "main": [
         [
           {
-            "node": "Scrape Property Detail",
+            "node": "Edit Fields",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Scrape Property Detail": {
+    "Ziskej detaily inzeratu": {
       "main": [
         [
           {
-            "node": "Extract Property Details",
+            "node": "Ziskej detail inzeratu",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Extract Property Details": {
+    "Ziskej detail inzeratu": {
       "main": [
         [
           {
-            "node": "Filter Reserved",
+            "node": "Merge",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Filter Reserved": {
+    "Ziskej hodnoceni z Perplexity": {
       "main": [
         [
           {
-            "node": "Search Notion DB",
+            "node": "Převeď AI odpověď na objekty",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Search Notion DB": {
+    "If máme inzeráty ke zpracování": {
       "main": [
         [
           {
-            "node": "Check If New",
+            "node": "Ziskej hodnoceni z Perplexity",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Check If New": {
+    "Převeď AI odpověď na objekty": {
       "main": [
         [
           {
-            "node": "Create Notion Page",
+            "node": "Propoj hodnoceni a url",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Create Notion Page": {
+    "If není rezervace a je vhodné": {
       "main": [
         [
           {
-            "node": "Send Telegram Alert",
+            "node": "Zapis domy do databaze",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Propoj hodnoceni a url": {
+      "main": [
+        [
+          {
+            "node": "If není rezervace a je vhodné",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Ziskej detaily inzeratu",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Propoj hodnoceni a url",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "If máme inzeráty ke zpracování",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zapis domy do databaze": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Ziskej odkazy na inzeraty",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Neni zadny inzerat!",
             "type": "main",
             "index": 0
           }
@@ -359,5 +743,16 @@
       ]
     }
   },
-  "pinData": {}
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "d4158dc2-0128-4a97-be6b-2ffece6594b3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
+  },
+  "id": "sHw7bN9C53BbKCBv",
+  "tags": []
 }
