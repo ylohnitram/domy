@@ -128,8 +128,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -4848,
-        -1312
+        -4928,
+        -1536
       ],
       "id": "50a3dacb-7ad0-44c4-8057-dc55aab58ba5",
       "name": "Ziskej detaily inzeratu"
@@ -195,8 +195,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        -4656,
-        -1312
+        -4736,
+        -1536
       ],
       "id": "d950c3fd-b834-4855-be9e-e94b8275f81e",
       "name": "Ziskej detail inzeratu"
@@ -363,30 +363,6 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "3ff4bb5e-cc67-4ddd-bd5f-5df4708ebdd2",
-              "name": "=unique_id",
-              "value": "={{ $json.url[0].split('/').pop() }}{{ Math.floor(Math.random() * 10000) }}",
-              "type": "number"
-            }
-          ]
-        },
-        "includeOtherFields": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -5488,
-        -1328
-      ],
-      "id": "9a216a51-dff0-444c-9c0a-c47c33f83b86",
-      "name": "Edit Fields"
-    },
-    {
-      "parameters": {
         "mode": "combine",
         "combineBy": "combineByPosition",
         "options": {}
@@ -394,8 +370,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -4496,
-        -1072
+        -4176,
+        -1296
       ],
       "id": "9c8def9d-91a0-407d-845c-3bc437d959f9",
       "name": "Merge"
@@ -533,6 +509,30 @@
     },
     {
       "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3ff4bb5e-cc67-4ddd-bd5f-5df4708ebdd2",
+              "name": "=unique_id",
+              "value": "={{ $json.url[0].split('/').pop() }}{{ Math.floor(Math.random() * 10000) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5152,
+        -1536
+      ],
+      "id": "9a216a51-dff0-444c-9c0a-c47c33f83b86",
+      "name": "Unikatni ID pro parovani"
+    },
+    {
+      "parameters": {
         "resource": "databasePage",
         "operation": "getAll",
         "databaseId": {
@@ -543,31 +543,16 @@
           "cachedResultUrl": "https://www.notion.so/262ba2a4bf4b8050a729d7fa73dddc93"
         },
         "returnAll": true,
-        "filterType": "manual",
-        "filters": {
-          "conditions": [
-            {
-              "key": "URL|url",
-              "condition": "equals",
-              "urlValue": "={{ $json.normalized_url }}"
-            },
-            {
-              "key": "URL|url",
-              "condition": "equals",
-              "urlValue": "={{ $json.normalized_url.replace('https://sreality.cz', 'https://www.sreality.cz') }}"
-            }
-          ]
-        },
         "options": {}
       },
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        -4848,
-        -1712
+        -5888,
+        -1744
       ],
-      "id": "a9a9cada-b5ea-4686-b578-6054b36657eb",
-      "name": "Zjisti, jestli uz tento zaznam nemame",
+      "id": "97d6ddc6-7387-42d7-94e9-66a6f8745d02",
+      "name": "Ziskej zaznamy z databaze",
       "credentials": {
         "notionApi": {
           "id": "i4KxpUuErwtEY3Mh",
@@ -577,75 +562,41 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
+        "assignments": {
+          "assignments": [
             {
-              "id": "d39f8f6e-1a47-4b75-bd25-0dc7fcc0c366",
-              "leftValue": "={{ $json.id }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "exists",
-                "singleValue": true
-              }
-            },
-            {
-              "id": "566fb695-c56a-4f15-ab6a-5ee1c6fd9f9f",
-              "leftValue": "={{ $json.id }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "notEmpty",
-                "singleValue": true
-              }
+              "id": "bb083387-b3f1-4d9c-b1f2-e127126736fd",
+              "name": "url",
+              "value": "={{ $json.property_url.replace(/^https?:\\/\\/[^\\/]+/, '') }}",
+              "type": "string"
             }
-          ],
-          "combinator": "and"
+          ]
         },
         "options": {}
       },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        -4640,
-        -1712
+        -5680,
+        -1744
       ],
-      "id": "2028af05-fdec-4e5f-a92c-713a11aa3331",
-      "name": "If1"
+      "id": "12efcca5-9dbd-4405-a8a9-ebc7fb5fc14e",
+      "name": "Ziskej detail url"
     },
     {
       "parameters": {
-        "content": "## Predejdi duplicitam",
-        "height": 336,
-        "width": 848
+        "mode": "combineBySql",
+        "query": "   SELECT input2.*\n     FROM input2\nLEFT JOIN input1 ON input2.url = input1.url\n    WHERE input1.url IS NULL;",
+        "options": {}
       },
-      "type": "n8n-nodes-base.stickyNote",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
       "position": [
-        -5200,
-        -1776
+        -5360,
+        -1536
       ],
-      "typeVersion": 1,
-      "id": "aa38676d-2488-4cc9-94f8-b713075b98d6",
-      "name": "Sticky Note"
-    },
-    {
-      "parameters": {
-        "jsCode": "const items = [];\n\nfor (const item of $input.all()) {\n  // Normalizace URL - odstraní www rozdíly\n  function normalizeUrl(url) {\n    const fullUrl = \"https://sreality.cz\" + url;\n    return fullUrl\n      .replace(/^https?:\\/\\/www\\./, 'https://')\n      .replace(/^https?:\\/\\/(?!www\\.)/, 'https://')\n      .replace(/\\/+$/, '');\n  }\n  \n  const normalizedUrl = normalizeUrl(item.json.url);\n  \n  items.push({\n    json: {\n      ...item.json,\n      normalized_url: normalizedUrl\n    }\n  });\n}\n\nreturn items;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -5056,
-        -1712
-      ],
-      "id": "14a38c48-6213-40d9-8c87-60b3846947ef",
-      "name": "Normalizuj URL"
+      "id": "11c4f59b-f1d0-4869-a792-f743ad4942ea",
+      "name": "Merge1"
     }
   ],
   "pinData": {},
@@ -655,6 +606,11 @@
         [
           {
             "node": "Set Search URL",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Ziskej zaznamy z databaze",
             "type": "main",
             "index": 0
           }
@@ -699,9 +655,9 @@
       "main": [
         [
           {
-            "node": "Edit Fields",
+            "node": "Merge1",
             "type": "main",
-            "index": 0
+            "index": 1
           }
         ]
       ]
@@ -797,27 +753,6 @@
         ]
       ]
     },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
-          },
-          {
-            "node": "Propoj hodnoceni a url",
-            "type": "main",
-            "index": 1
-          },
-          {
-            "node": "Normalizuj URL",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Merge": {
       "main": [
         [
@@ -858,40 +793,54 @@
         ]
       ]
     },
-    "Zjisti, jestli uz tento zaznam nemame": {
+    "Unikatni ID pro parovani": {
       "main": [
-        [
-          {
-            "node": "If1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If1": {
-      "main": [
-        [
-          {
-            "node": "No Operation, do nothing",
-            "type": "main",
-            "index": 0
-          }
-        ],
         [
           {
             "node": "Ziskej detaily inzeratu",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Propoj hodnoceni a url",
+            "type": "main",
+            "index": 1
           }
         ]
       ]
     },
-    "Normalizuj URL": {
+    "Ziskej zaznamy z databaze": {
       "main": [
         [
           {
-            "node": "Zjisti, jestli uz tento zaznam nemame",
+            "node": "Ziskej detail url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ziskej detail url": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Unikatni ID pro parovani",
             "type": "main",
             "index": 0
           }
@@ -904,7 +853,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "e1d64ef1-b713-4c73-9588-aea68beee27c",
+  "versionId": "c5df8717-95a8-4b4c-95ef-48733d99079f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
