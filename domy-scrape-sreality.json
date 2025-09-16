@@ -27,7 +27,7 @@
             {
               "id": "810ed8db-19dd-4003-9d31-2fb0c4fa1ad0",
               "name": "searchUrl",
-              "value": "https://www.sreality.cz/hledani/prodej/domy/chalupy,pamatky-jine,rodinne-domy,vicegeneracni-domy,vily,zemedelske-usedlosti/litomerice,praha,stredocesky-kraj?stav=dobry-stav%2Cnovostavby%2Cpo-rekonstrukci%2Cvelmi-dobry-stav&stari=dnes&cena-od=3000000&cena-do=6500000&plocha-od=110&plocha-do=350&plocha-pozemku-od=300",
+              "value": "https://www.sreality.cz/hledani/prodej/domy/chalupy,pamatky-jine,rodinne-domy,vicegeneracni-domy,vily,zemedelske-usedlosti/ceska-lipa,chrudim,hradec-kralove,jicin,klatovy,litomerice,pardubice,plzen,plzen-sever,praha,rokycany,semily,stredocesky-kraj,tabor?stav=dobry-stav%2Cnovostavby%2Cpo-rekonstrukci%2Cvelmi-dobry-stav&stari=dnes&cena-od=3000000&cena-do=6500000&plocha-od=110&plocha-do=350&plocha-pozemku-od=300&lat-max=52.382305628707854&lat-min=47.301584511330795&lon-max=17.160644531250004&lon-min=11.953125000000002",
               "type": "string"
             }
           ]
@@ -853,7 +853,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "c5df8717-95a8-4b4c-95ef-48733d99079f",
+  "versionId": "93436cd6-6b19-4e33-9f35-0a2378def5be",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
