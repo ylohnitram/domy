@@ -27,7 +27,7 @@
             {
               "id": "810ed8db-19dd-4003-9d31-2fb0c4fa1ad0",
               "name": "searchUrl",
-              "value": "https://www.sreality.cz/hledani/prodej/domy/chalupy,pamatky-jine,rodinne-domy,vily,zemedelske-usedlosti/litomerice,stredocesky-kraj?stav=dobry-stav%2Cnovostavby%2Cpo-rekonstrukci%2Cvelmi-dobry-stav&stari=dnes&cena-od=3500000&cena-do=6500000&plocha-od=110&plocha-do=350&plocha-pozemku-od=300",
+              "value": "https://www.sreality.cz/hledani/prodej/domy/chalupy,pamatky-jine,rodinne-domy,vicegeneracni-domy,vily,zemedelske-usedlosti/litomerice,praha,stredocesky-kraj?stav=dobry-stav%2Cnovostavby%2Cpo-rekonstrukci%2Cvelmi-dobry-stav&stari=dnes&cena-od=3000000&cena-do=6500000&plocha-od=110&plocha-do=350&plocha-pozemku-od=300",
               "type": "string"
             }
           ]
@@ -128,8 +128,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -5280,
-        -1328
+        -4848,
+        -1312
       ],
       "id": "50a3dacb-7ad0-44c4-8057-dc55aab58ba5",
       "name": "Ziskej detaily inzeratu"
@@ -195,8 +195,8 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        -5072,
-        -1328
+        -4656,
+        -1312
       ],
       "id": "d950c3fd-b834-4855-be9e-e94b8275f81e",
       "name": "Ziskej detail inzeratu"
@@ -394,8 +394,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -4912,
-        -1088
+        -4496,
+        -1072
       ],
       "id": "9c8def9d-91a0-407d-845c-3bc437d959f9",
       "name": "Merge"
@@ -530,6 +530,122 @@
       ],
       "id": "d7b39e68-1d1d-4e44-8a70-be00b3dbe1f5",
       "name": "Neni zadny inzerat!"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "operation": "getAll",
+        "databaseId": {
+          "__rl": true,
+          "value": "262ba2a4-bf4b-8050-a729-d7fa73dddc93",
+          "mode": "list",
+          "cachedResultName": "Domy",
+          "cachedResultUrl": "https://www.notion.so/262ba2a4bf4b8050a729d7fa73dddc93"
+        },
+        "returnAll": true,
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "key": "URL|url",
+              "condition": "equals",
+              "urlValue": "={{ $json.normalized_url }}"
+            },
+            {
+              "key": "URL|url",
+              "condition": "equals",
+              "urlValue": "={{ $json.normalized_url.replace('https://sreality.cz', 'https://www.sreality.cz') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        -4848,
+        -1712
+      ],
+      "id": "a9a9cada-b5ea-4686-b578-6054b36657eb",
+      "name": "Zjisti, jestli uz tento zaznam nemame",
+      "credentials": {
+        "notionApi": {
+          "id": "i4KxpUuErwtEY3Mh",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d39f8f6e-1a47-4b75-bd25-0dc7fcc0c366",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "566fb695-c56a-4f15-ab6a-5ee1c6fd9f9f",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4640,
+        -1712
+      ],
+      "id": "2028af05-fdec-4e5f-a92c-713a11aa3331",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "content": "## Predejdi duplicitam",
+        "height": 336,
+        "width": 848
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -5200,
+        -1776
+      ],
+      "typeVersion": 1,
+      "id": "aa38676d-2488-4cc9-94f8-b713075b98d6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = [];\n\nfor (const item of $input.all()) {\n  // Normalizace URL - odstraní www rozdíly\n  function normalizeUrl(url) {\n    const fullUrl = \"https://sreality.cz\" + url;\n    return fullUrl\n      .replace(/^https?:\\/\\/www\\./, 'https://')\n      .replace(/^https?:\\/\\/(?!www\\.)/, 'https://')\n      .replace(/\\/+$/, '');\n  }\n  \n  const normalizedUrl = normalizeUrl(item.json.url);\n  \n  items.push({\n    json: {\n      ...item.json,\n      normalized_url: normalizedUrl\n    }\n  });\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5056,
+        -1712
+      ],
+      "id": "14a38c48-6213-40d9-8c87-60b3846947ef",
+      "name": "Normalizuj URL"
     }
   ],
   "pinData": {},
@@ -690,14 +806,14 @@
             "index": 1
           },
           {
-            "node": "Ziskej detaily inzeratu",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "Propoj hodnoceni a url",
             "type": "main",
             "index": 1
+          },
+          {
+            "node": "Normalizuj URL",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -741,6 +857,46 @@
           }
         ]
       ]
+    },
+    "Zjisti, jestli uz tento zaznam nemame": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ziskej detaily inzeratu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizuj URL": {
+      "main": [
+        [
+          {
+            "node": "Zjisti, jestli uz tento zaznam nemame",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -748,7 +904,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "d4158dc2-0128-4a97-be6b-2ffece6594b3",
+  "versionId": "e1d64ef1-b713-4c73-9588-aea68beee27c",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
