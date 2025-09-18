@@ -103,39 +103,6 @@
     },
     {
       "parameters": {
-        "url": "={{ \"https://www.sreality.cz\" + $json.url }}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "User-Agent",
-              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            },
-            {
-              "name": "Accept",
-              "value": "text/html,application/xhtml+xml"
-            },
-            {
-              "name": "Accept-Language",
-              "value": "cs,en;q=0.9"
-            }
-          ]
-        },
-        "options": {
-          "allowUnauthorizedCerts": true
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -4928,
-        -1536
-      ],
-      "id": "50a3dacb-7ad0-44c4-8057-dc55aab58ba5",
-      "name": "Ziskej detaily inzeratu"
-    },
-    {
-      "parameters": {
         "fieldToSplitOut": "url",
         "include": "allOtherFields",
         "options": {}
@@ -148,58 +115,6 @@
       ],
       "id": "ddc0c2de-1b3f-46bc-8a0e-75f7d820169d",
       "name": "Split Out"
-    },
-    {
-      "parameters": {
-        "operation": "extractHtmlContent",
-        "extractionValues": {
-          "values": [
-            {
-              "key": "price",
-              "cssSelector": "=.css-1b1ajfd",
-              "skipSelectors": "img, script, style"
-            },
-            {
-              "key": "description",
-              "cssSelector": ".css-16eb98b",
-              "skipSelectors": "img, script, style"
-            },
-            {
-              "key": "energy_class",
-              "cssSelector": ".css-1h3n6d3",
-              "skipSelectors": "img, script, style"
-            },
-            {
-              "key": "location",
-              "cssSelector": ".css-74daet .MuiBreadcrumbs-li:last-child a",
-              "skipSelectors": "img, script, style"
-            },
-            {
-              "key": "tabulka",
-              "cssSelector": "dl.css-5hfkmb > div.css-1xhj18k",
-              "skipSelectors": "img, script, style",
-              "returnArray": true
-            },
-            {
-              "key": "breadcrumb",
-              "cssSelector": ".css-74daet .MuiBreadcrumbs-li a",
-              "skipSelectors": "img, script, style",
-              "returnArray": true
-            }
-          ]
-        },
-        "options": {
-          "trimValues": true
-        }
-      },
-      "type": "n8n-nodes-base.html",
-      "typeVersion": 1.2,
-      "position": [
-        -4736,
-        -1536
-      ],
-      "id": "d950c3fd-b834-4855-be9e-e94b8275f81e",
-      "name": "Ziskej detail inzeratu"
     },
     {
       "parameters": {},
@@ -597,6 +512,111 @@
       ],
       "id": "11c4f59b-f1d0-4869-a792-f743ad4942ea",
       "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eec0bc07-99cb-4aef-a98a-d2adbcf887a3",
+              "name": "urlId",
+              "value": "={{ $json.url.split('/').slice(-1)[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5008,
+        -1696
+      ],
+      "id": "f39cbc7f-09e0-46e8-8bd2-48bddb60ac3b",
+      "name": "Ziskej Id inzeratu"
+    },
+    {
+      "parameters": {
+        "url": "={{ \"https://www.sreality.cz/api/cs/v2/estates/\" + $json.urlId }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -4800,
+        -1696
+      ],
+      "id": "5ec6da02-1d79-4222-8e98-bbd9f12b0951",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "content": "## Sreality API",
+        "height": 304,
+        "width": 608
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -5040,
+        -1776
+      ],
+      "typeVersion": 1,
+      "id": "a0f8865c-e499-4403-9713-6b57449dfbd4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab32eb5e-c7d4-486a-8ec6-fb4725884195",
+              "name": "price",
+              "value": "={{ $json.price_czk.value_raw }}",
+              "type": "string"
+            },
+            {
+              "id": "c1bb9da4-47d2-43f6-baf4-96b52f8f9203",
+              "name": "description",
+              "value": "={{ $json.text.value }}",
+              "type": "string"
+            },
+            {
+              "id": "9931a344-f85b-4af4-9eb9-ef51954034c5",
+              "name": "location",
+              "value": "={{ $json.locality.value }}",
+              "type": "string"
+            },
+            {
+              "id": "61c4152e-c606-4e25-90bb-ef2d01e6f261",
+              "name": "energy_class",
+              "value": "={{ $json.energy_efficiency_rating_cb === 1 ? 'A' : $json.energy_efficiency_rating_cb === 2 ? 'B' : $json.energy_efficiency_rating_cb === 3 ? 'C' : $json.energy_efficiency_rating_cb === 4 ? 'D' : $json.energy_efficiency_rating_cb === 5 ? 'E' : $json.energy_efficiency_rating_cb === 6 ? 'F' : $json.energy_efficiency_rating_cb === 7 ? 'G' : 'G' }}",
+              "type": "string"
+            },
+            {
+              "id": "36011bed-38c4-493d-8deb-63fe3e4f6e1c",
+              "name": "tabulka",
+              "value": "={{ $json.items }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4592,
+        -1696
+      ],
+      "id": "f77b905c-f944-4150-9a0f-31dac8d8c6ed",
+      "name": "Edit Fields"
     }
   ],
   "pinData": {},
@@ -658,28 +678,6 @@
             "node": "Merge1",
             "type": "main",
             "index": 1
-          }
-        ]
-      ]
-    },
-    "Ziskej detaily inzeratu": {
-      "main": [
-        [
-          {
-            "node": "Ziskej detail inzeratu",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Ziskej detail inzeratu": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -797,11 +795,6 @@
       "main": [
         [
           {
-            "node": "Ziskej detaily inzeratu",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "Merge",
             "type": "main",
             "index": 1
@@ -810,6 +803,11 @@
             "node": "Propoj hodnoceni a url",
             "type": "main",
             "index": 1
+          },
+          {
+            "node": "Ziskej Id inzeratu",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -846,6 +844,39 @@
           }
         ]
       ]
+    },
+    "Ziskej Id inzeratu": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -853,7 +884,7 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "93436cd6-6b19-4e33-9f35-0a2378def5be",
+  "versionId": "212b4e73-1016-4d56-9069-71514bfd30cf",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
