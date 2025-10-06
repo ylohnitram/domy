@@ -432,11 +432,18 @@
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "0af16875-7edf-4ce0-83d2-39b6113a2a6a",
+  "versionId": "c62b9ec1-9f60-4b2c-8b85-b164ebafa945",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
   },
   "id": "PWf9Rv0Vf8yZJxy6",
-  "tags": []
+  "tags": [
+    {
+      "createdAt": "2025-10-04T21:04:20.501Z",
+      "updatedAt": "2025-10-04T21:04:20.501Z",
+      "id": "DGR6hAIkRbixxSwp",
+      "name": "domy"
+    }
+  ]
 }

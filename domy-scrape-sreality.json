@@ -6,7 +6,8 @@
         "rule": {
           "interval": [
             {
-              "triggerAtHour": 15
+              "field": "hours",
+              "hoursInterval": 4
             }
           ]
         }
@@ -27,7 +28,7 @@
             {
               "id": "810ed8db-19dd-4003-9d31-2fb0c4fa1ad0",
               "name": "searchUrl",
-              "value": "https://www.sreality.cz/hledani/prodej/domy/chalupy,pamatky-jine,rodinne-domy,vicegeneracni-domy,vily,zemedelske-usedlosti/ceska-lipa,chrudim,hradec-kralove,jicin,klatovy,litomerice,pardubice,plzen,plzen-sever,praha,rokycany,semily,stredocesky-kraj,tabor?stav=dobry-stav%2Cnovostavby%2Cpo-rekonstrukci%2Cvelmi-dobry-stav&stari=dnes&cena-od=3000000&cena-do=6500000&plocha-od=110&plocha-do=350&plocha-pozemku-od=300&lat-max=52.382305628707854&lat-min=47.301584511330795&lon-max=17.160644531250004&lon-min=11.953125000000002",
+              "value": "https://www.sreality.cz/hledani/domy/usti-nad-orlici?lat-max=50.71037368077058&lat-min=49.30542663894831&lon-max=17.196350097656254&lon-min=15.707702636718752",
               "type": "string"
             }
           ]
@@ -121,8 +122,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -4000,
-        208
+        -3840,
+        -384
       ],
       "id": "5779c905-3d60-45dd-85b7-45dc9455ffcf",
       "name": "No Operation, do nothing"
@@ -255,8 +256,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -5440,
-        -816
+        -4640,
+        -800
       ],
       "id": "25e3f7ad-bc28-4f9d-93c9-4bb257a903ec",
       "name": "If není rezervace a je vhodné"
@@ -285,7 +286,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -4176,
+        -3968,
         -1296
       ],
       "id": "9c8def9d-91a0-407d-845c-3bc437d959f9",
@@ -343,6 +344,10 @@
             {
               "key": "URL|url",
               "urlValue": "={{ \"https://sreality.cz\" + $json.url }}"
+            },
+            {
+              "key": "Velikost města|number",
+              "numberValue": "={{ $json.velikost_mesta }}"
             }
           ]
         },
@@ -354,8 +359,8 @@
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2,
       "position": [
-        -5168,
-        -832
+        -4144,
+        -816
       ],
       "id": "95ce1949-e4e7-4b01-937f-b269a6e2b0ee",
       "name": "Zapis domy do databaze",
@@ -530,8 +535,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -5008,
-        -1696
+        -4800,
+        -1680
       ],
       "id": "f39cbc7f-09e0-46e8-8bd2-48bddb60ac3b",
       "name": "Ziskej Id inzeratu"
@@ -539,6 +544,67 @@
     {
       "parameters": {
         "url": "={{ \"https://www.sreality.cz/api/cs/v2/estates/\" + $json.urlId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json, text/plain, */*"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "cs-CZ,cs;q=0.9,en;q=0.8"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate, br"
+            },
+            {
+              "name": "Referer",
+              "value": "https://www.sreality.cz/"
+            },
+            {
+              "name": "Origin",
+              "value": "https://www.sreality.cz/"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Sec-Fetch-Dest",
+              "value": "empty"
+            },
+            {
+              "name": "Sec-Fetch-Mode",
+              "value": "cors"
+            },
+            {
+              "name": "Sec-Fetch-Site",
+              "value": "same-origin"
+            },
+            {
+              "name": "Sec-Ch-Ua",
+              "value": "\"Google Chrome\";v=\"129\", \"Not=A?Brand\";v=\"8\", \"Chromium\";v=\"129\" Sec-Ch-Ua-Mobile: ?0"
+            },
+            {
+              "name": "Sec-Ch-Ua-Platform",
+              "value": "\"Windows\""
+            },
+            {
+              "name": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "name": "Pragma",
+              "value": "no-cache"
+            }
+          ]
+        },
         "options": {
           "response": {
             "response": {
@@ -550,11 +616,12 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -4800,
-        -1696
+        -4592,
+        -1680
       ],
       "id": "5ec6da02-1d79-4222-8e98-bbd9f12b0951",
-      "name": "HTTP Request"
+      "name": "HTTP Request",
+      "executeOnce": true
     },
     {
       "parameters": {
@@ -564,7 +631,7 @@
       },
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -5040,
+        -4848,
         -1776
       ],
       "typeVersion": 1,
@@ -604,6 +671,12 @@
               "name": "tabulka",
               "value": "={{ $json.items }}",
               "type": "string"
+            },
+            {
+              "id": "e7f02500-b041-41e4-878d-d1445eedc4c7",
+              "name": "locality_district_id ",
+              "value": "={{ $json.locality_district_id }}",
+              "type": "string"
             }
           ]
         },
@@ -612,11 +685,122 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -4592,
-        -1696
+        -4384,
+        -1680
       ],
       "id": "f77b905c-f944-4150-9a0f-31dac8d8c6ed",
       "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const vstup = $json.nazev; // nebo $json.obec podle struktury dat\n\nfunction vycistitNazevObce(text) {\n  if (!text || typeof text !== 'string') {\n    return 'RANDOM';\n  }\n  \n  // Odstranit extra mezery a trimovat\n  let clean = text.trim().replace(/\\s+/g, ' ');\n  \n  // Seznam krajských a okresních měst pro pozdější kontrolu\n  const vyznamnaAMesta = [\n    'Praha', 'Brno', 'Ostrava', 'Plzeň', 'Liberec', 'Olomouc', 'České Budějovice',\n    'Hradec Králové', 'Ústí nad Labem', 'Pardubice', 'Zlín', 'Karlovy Vary', \n    'Jihlava', 'Kladno', 'Most', 'Opava', 'Frýdek-Místek', 'Karviná', 'Teplice',\n    'Chomutov', 'Děčín', 'Přerov', 'Jablonec nad Nisou', 'Mladá Boleslav', 'Prostějov',\n    'Přerov', 'Česká Lípa', 'Třinec', 'Tábor', 'Znojmo', 'Třebíč', 'Martin',\n    'Kolín', 'Příbram', 'Cheb', 'Písek', 'Trutnov', 'Orlová', 'Vsetín',\n    'Valašské Meziříčí', 'Šumperk', 'Kroměříž', 'Uherské Hradiště', 'Náchod',\n    'Litoměřice', 'Nový Jičín', 'Český Krumlov', 'Havířov', 'Benešov', 'Semily'\n  ];\n  \n  // 1. Pokud obsahuje pomlčku, rozdělíme a vezmeme první část\n  if (clean.includes(' - ')) {\n    const parts = clean.split(' - ');\n    const prvni = parts[0].trim();\n    const druha = parts[1] ? parts[1].split(',')[0].trim() : '';\n    \n    // Pokud první část je významné město, vrátíme ji\n    if (vyznamnaAMesta.includes(prvni)) {\n      return prvni;\n    }\n    \n    // Pokud druhá část je významné město, vrátíme ji\n    if (vyznamnaAMesta.includes(druha)) {\n      return druha;\n    }\n    \n    // Jinak označíme jako RANDOM (malé obce spojené pomlčkou)\n    return 'RANDOM';\n  }\n  \n  // 2. Pokud obsahuje čárku, rozdělíme a analyzujeme části\n  if (clean.includes(',')) {\n    const parts = clean.split(',').map(p => p.trim());\n    \n    for (let i = 0; i < parts.length; i++) {\n      const cast = parts[i];\n      \n      // Přeskočíme části začínající \"okres\"\n      if (cast.toLowerCase().startsWith('okres')) {\n        continue;\n      }\n      \n      // Pokud najdeme významné město, vrátíme ho\n      if (vyznamnaAMesta.includes(cast)) {\n        return cast;\n      }\n      \n      // Pokud část obsahuje známé město jako substring\n      for (const mesto of vyznamnaAMesta) {\n        if (cast.includes(mesto)) {\n          return mesto;\n        }\n      }\n    }\n    \n    // Pokud nenajdeme významné město, vrátíme první část (může být ulice/čtvrť)\n    const prvniCast = parts[0];\n    \n    // Kontrola, jestli první část vypadá jako ulice (obsahuje typické názvy)\n    const ulicoveSlova = ['ulice', 'náměstí', 'třída', 'nábřeží', 'sad', 'sady', 'Ku ', 'Na ', 'Pod ', 'Nad ', 'V ', 'U ', 'Za '];\n    const jeUlice = ulicoveSlova.some(slovo => prvniCast.includes(slovo));\n    \n    if (jeUlice && parts.length > 1) {\n      // Pokud první část je ulice, vrátíme druhou část\n      return parts[1].split(' okres')[0].trim();\n    }\n    \n    return prvniCast;\n  }\n  \n  // 3. Bez čárky ani pomlčky - vrátíme jak je\n  return clean;\n}\n\nconst vysledek = vycistitNazevObce(vstup);\n\nreturn { \n  location: vysledek \n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5312,
+        -704
+      ],
+      "id": "24f35b7c-0677-4bd8-9365-175eaaf00434",
+      "name": "Očisti jména obcí"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Seznam hlavního města\nconst hlavniMesto = ['Praha'];\n\n// Seznam krajských měst (bez Prahy)\nconst krajskaMesta = [\n  'České Budějovice', \n  'Plzeň',\n  'Karlovy Vary',\n  'Liberec',\n  'Hradec Králové', \n  'Pardubice',\n  'Jihlava',\n  'Brno',\n  'Olomouc',\n  'Zlín',\n  'Ostrava'\n];\n\n// Seznam okresních měst (bez krajských a severočeských kromě Litoměřic)\nconst okresniMesta = [\n  'Benešov', 'Beroun', 'Blansko', 'Bruntál', 'Břeclav',\n  'Česká Lípa', 'Český Krumlov', 'Domažlice', 'Frýdek-Místek', \n  'Havlíčkův Brod', 'Hodonín', 'Cheb', 'Chrudim', 'Jablonec nad Nisou', \n  'Jeseník', 'Jičín', 'Jindřichův Hradec', 'Karviná', 'Kladno', \n  'Klatovy', 'Kolín', 'Kroměříž', 'Kutná Hora', 'Litoměřice', \n  'Mladá Boleslav', 'Náchod', 'Nový Jičín', 'Nymburk', 'Opava', \n  'Pelhřimov', 'Písek', 'Prachatice', 'Prostějov', 'Přerov', \n  'Příbram', 'Rakovník', 'Rokycany', 'Rychnov nad Kněžnou', \n  'Semily', 'Sokolov', 'Strakonice', 'Svitavy', 'Šumperk', \n  'Tábor', 'Tachov', 'Trutnov', 'Třebíč', 'Uherské Hradiště', \n  'Ústí nad Orlicí', 'Vsetín', 'Vyškov', 'Znojmo', 'Žďár nad Sázavou'\n];\n\n// Funkce pro výpočet skóre\nfunction getScore(mesto) {\n  if (hlavniMesto.includes(mesto)) {\n    return 5;\n  } else if (krajskaMesta.includes(mesto)) {\n    return 4;\n  } else if (okresniMesta.includes(mesto)) {\n    return 3;\n  } else {\n    return 0;\n  }\n}\n\n// Zpracování všech items a vrácení pouze čísel\nconst scores = $input.all().map(item => {\n  const mesto = item.json.location;\n  return getScore(mesto);\n});\n\nreturn scores.map(score => ({ velikost_mesta: score }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5072,
+        -704
+      ],
+      "id": "7a9b6dbd-39ff-455f-a0c5-2849eeeaa01d",
+      "name": "Ohodnot velikost obce"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -4816,
+        -800
+      ],
+      "id": "c204ac1c-61f8-45b5-a0f3-c9552f572423",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1105aba4-6e3c-4f30-bd2b-46b7397d7a44",
+              "name": "sreality_okres_id",
+              "value": "={{ $json[\"locality_district_id \"] }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4176,
+        -1680
+      ],
+      "id": "02d3a45d-585e-4a63-8f2c-4d3d9b377d29",
+      "name": "Edit Fields1",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"okresy\": [\n    {\n      \"id\": 23,\n      \"okres\": \"Litoměřice\"\n    },\n    {\n      \"id\": 27,\n      \"okres\": \"Ústí nad Labem\"\n    },\n    {\n      \"id\": 18,\n      \"okres\": \"Česká Lípa\"\n    },\n    {\n      \"id\": 21,\n      \"okres\": \"Jablonec nad Nisou\"\n    },\n    {\n      \"id\": 22,\n      \"okres\": \"Liberec\"\n    },\n    {\n      \"id\": 34,\n      \"okres\": \"Semily\"\n    },\n    {\n      \"id\": 48,\n      \"okres\": \"Benešov\"\n    },\n    {\n      \"id\": 49,\n      \"okres\": \"Beroun\"\n    },\n    {\n      \"id\": 50,\n      \"okres\": \"Kladno\"\n    },\n    {\n      \"id\": 51,\n      \"okres\": \"Kolín\"\n    },\n    {\n      \"id\": 52,\n      \"okres\": \"Kutná Hora\"\n    },\n    {\n      \"id\": 54,\n      \"okres\": \"Mělník\"\n    },\n    {\n      \"id\": 53,\n      \"okres\": \"Mladá Boleslav\"\n    },\n    {\n      \"id\": 55,\n      \"okres\": \"Nymburk\"\n    },\n    {\n      \"id\": 56,\n      \"okres\": \"Praha-východ\"\n    },\n    {\n      \"id\": 57,\n      \"okres\": \"Praha-západ\"\n    },\n    {\n      \"id\": 58,\n      \"okres\": \"Příbram\"\n    },\n    {\n      \"id\": 59,\n      \"okres\": \"Rakovník\"\n    },\n    {\n      \"id\": 8,\n      \"okres\": \"Domažlice\"\n    },\n    {\n      \"id\": 11,\n      \"okres\": \"Klatovy\"\n    },\n    {\n      \"id\": 13,\n      \"okres\": \"Plzeň-jih\"\n    },\n    {\n      \"id\": 12,\n      \"okres\": \"Plzeň-město\"\n    },\n    {\n      \"id\": 14,\n      \"okres\": \"Plzeň-sever\"\n    },\n    {\n      \"id\": 15,\n      \"okres\": \"Rokycany\"\n    },\n    {\n      \"id\": 17,\n      \"okres\": \"Tachov\"\n    },\n    {\n      \"id\": 1,\n      \"okres\": \"České Budějovice\"\n    },\n    {\n      \"id\": 2,\n      \"okres\": \"Český Krumlov\"\n    },\n    {\n      \"id\": 3,\n      \"okres\": \"Jindřichův Hradec\"\n    },\n    {\n      \"id\": 4,\n      \"okres\": \"Písek\"\n    },\n    {\n      \"id\": 5,\n      \"okres\": \"Prachatice\"\n    },\n    {\n      \"id\": 6,\n      \"okres\": \"Strakonice\"\n    },\n    {\n      \"id\": 7,\n      \"okres\": \"Tábor\"\n    },\n    {\n      \"id\": 28,\n      \"okres\": \"Hradec Králové\"\n    },\n    {\n      \"id\": 30,\n      \"okres\": \"Jičín\"\n    },\n    {\n      \"id\": 31,\n      \"okres\": \"Náchod\"\n    },\n    {\n      \"id\": 33,\n      \"okres\": \"Rychnov nad Kněžnou\"\n    },\n    {\n      \"id\": 36,\n      \"okres\": \"Trutnov\"\n    },\n    {\n      \"id\": 29,\n      \"okres\": \"Chrudim\"\n    },\n    {\n      \"id\": 32,\n      \"okres\": \"Pardubice\"\n    },\n    {\n      \"id\": 35,\n      \"okres\": \"Svitavy\"\n    },\n    {\n      \"id\": 37,\n      \"okres\": \"Ústí nad Orlicí\"\n    }\n  ]\n}",
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3968,
+        -1680
+      ],
+      "id": "0295cde0-766b-45a5-9d88-39f23c1fc888",
+      "name": "sreality ciselnik okresu"
+    },
+    {
+      "parameters": {
+        "jsCode": "const okresy = $json.okresy; // pole objektů z Set node\nconst srealityId = $json.sreality_okres_id; // číslo okresu ze Sreality\n\nconst found = okresy.find(o => o.id === srealityId);\nreturn {\n  json: {\n    okres_nazev: found ? found.okres : null\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3760,
+        -1680
+      ],
+      "id": "6e912452-3bf3-44a1-afb2-c3676246b7e4",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "content": "DEBUG: Pochcany ciselniky z sreality",
+        "height": 368,
+        "width": 640,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -4224,
+        -1824
+      ],
+      "typeVersion": 1,
+      "id": "6df86b03-afeb-4941-918d-4f3880cf3608",
+      "name": "Sticky Note1"
     }
   ],
   "pinData": {},
@@ -744,7 +928,12 @@
       "main": [
         [
           {
-            "node": "If není rezervace a je vhodné",
+            "node": "Očisti jména obcí",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge2",
             "type": "main",
             "index": 0
           }
@@ -871,7 +1060,67 @@
       "main": [
         [
           {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          },
+          {
             "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Očisti jména obcí": {
+      "main": [
+        [
+          {
+            "node": "Ohodnot velikost obce",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "If není rezervace a je vhodné",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ohodnot velikost obce": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "sreality ciselnik okresu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sreality ciselnik okresu": {
+      "main": [
+        [
+          {
+            "node": "Code",
             "type": "main",
             "index": 0
           }
@@ -879,16 +1128,23 @@
       ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "callerPolicy": "workflowsFromSameOwner"
   },
-  "versionId": "212b4e73-1016-4d56-9069-71514bfd30cf",
+  "versionId": "bf0a6f35-d7fe-4334-846a-e13b1eafaecf",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "76747fbaca6e1d14ccd717dc8911c429fb294ae0c18a72840b516d04b53cb529"
   },
   "id": "sHw7bN9C53BbKCBv",
-  "tags": []
+  "tags": [
+    {
+      "createdAt": "2025-10-04T21:04:20.501Z",
+      "updatedAt": "2025-10-04T21:04:20.501Z",
+      "id": "DGR6hAIkRbixxSwp",
+      "name": "domy"
+    }
+  ]
 }
